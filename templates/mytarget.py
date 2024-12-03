@@ -7,7 +7,8 @@
 # #############################
 
 from BayHunter.Targets import SingleTarget
-import MyForwardModel
+#import MyForwardModel
+from myfwd import MyForwardModel
 
 
 class MyOwnTarget(SingleTarget):
