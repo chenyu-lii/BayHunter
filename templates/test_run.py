@@ -12,8 +12,9 @@ rho = [2400, 2500, 2600]  # Densities
 
 
 # Initialize model
-x_input = np.array([0, 1, 2])
-model = MyForwardModel(obsx=x_input, ref="test_ref")
+# generate a numpy array with 50 samples ranging from 0.2 to 20, spaced regularly in logarithmic scale as obsx
+x_obs = np.logspace(np.log10(0.2), np.log10(20), num=50)
+model = MyForwardModel(obsx=x_obs, ref="test_ref")
 
 # Run the model (includes computation and validation)
 xmod, ymod = model.run_model(h, vp, vs, rho)

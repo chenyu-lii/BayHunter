@@ -13,7 +13,8 @@ def quick_routine_gpell(input_file, output_file):
     """
     # Construct the bash command
     # command = f"your_bash_command < {input_file} > {output_file}"
-    command = f"/home/lic0a/src/geopsypack-src-3.3.3/build/bin/gpell < {input_file} > {output_file}"
+    # command = f"/home/lic0a/src/geopsypack-src-3.3.3/build/bin/gpell < {input_file} > {output_file}"
+    command = f"/home/lic0a/src/geopsypack-src-3.3.3/build/bin/gpell -n 50 < {input_file} > {output_file}"
 
     # Run the command
     #result = subprocess.run(command, shell=True, text=True)
