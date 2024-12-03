@@ -9,7 +9,7 @@
 import numpy as np
 # import quick_routine   # fictive routine
 from quick_routine import quick_routine_gpell
-
+from scipy.interpolate import interp1d
 
 class MyForwardModel(object):
     """
@@ -83,7 +83,19 @@ class MyForwardModel(object):
                 
         xmod = np.array(xmod)
         ymod = np.array(ymod)
-        return xmod, ymod
+
+        print('xmod:',xmod)
+        #print('ymod:',ymod)
+
+        # Interpolate ymod to match obsx
+        #interpolation_function = interp1d(xmod, ymod, kind='linear', bounds_error=False, fill_value=np.nan)
+        interpolation_function = interp1d(xmod, ymod, kind='linear', bounds_error=False, fill_value='extrapolate')
+        ymod_interpolated = interpolation_function(self.obsx)
+        #print('ymode interpolated:', ymod_interpolated)
+
+        return self.obsx, ymod_interpolated
+
+        #return xmod, ymod
 
 
     def validate(self, xmod, ymod):
