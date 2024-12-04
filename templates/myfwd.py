@@ -36,8 +36,8 @@ class MyForwardModel(object):
         """
         test = self.modelparams['test']
 
-        #z = np.cumsum(h)
-        #z = np.concatenate(([0], z[:-1]))
+        z = np.cumsum(h)
+        z = np.concatenate(([0], z[:-1]))
 
         ## original code to compute with quick routine
         # xmod, ymod = quick_routine(test, z, vp, vs, rho)
@@ -49,16 +49,24 @@ class MyForwardModel(object):
         #    for depth, vp_val, vs_val, rho_val in zip(z, vp, vs, rho):
         #        f.write(f"{depth} {vp_val} {vs_val} {rho_val}\n")
         # Write input data to file, specify the last layer
-        n_layer = int(len(h)+1)
+        print("h:",h)
+        print("vp:",vp)
+        #print("vs:",vs)
+        #n_layer = int(len(h)+1)
+        n_layer = int(len(h))
         with open(input_file, "w") as f:
             f.write(f"# First line: number of layers\n")
             f.write(str(n_layer)+"\n")
             f.write(f"# One line per layer:\n")
             f.write(f"# Thickness(m), Vp (m/s), Vs (m/s) and density (kg/m3)\n")
             for thickness, vp_val, vs_val, rho_val in zip(h, vp, vs, rho):
+                thickness = thickness*1000
+                vp_val = vp_val*1000
+                vs_val = vs_val*1000
+                rho_val = rho_val*1000
                 f.write(f"{thickness} {vp_val} {vs_val} {rho_val}\n")
             f.write(f"# Last line is the half-space, its thickness is ignored but the first column is still mandatory\n")
-            f.write(f"0   2000 1000 2500\n")
+            #f.write(f"0   2000 1000 2500\n")
 
 
         # Specify output file
@@ -84,7 +92,7 @@ class MyForwardModel(object):
         xmod = np.array(xmod)
         ymod = np.array(ymod)
 
-        print('xmod:',xmod)
+        #print('xmod:',xmod)
         #print('ymod:',ymod)
 
         # Interpolate ymod to match obsx
