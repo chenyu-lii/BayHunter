@@ -50,8 +50,8 @@ class MyForwardModel(object):
         #        f.write(f"{depth} {vp_val} {vs_val} {rho_val}\n")
         # Write input data to file, specify the last layer
         print("h:",h)
-        print("vp:",vp)
-        #print("vs:",vs)
+        #print("vp:",vp)
+        print("vs:",vs)
         #n_layer = int(len(h)+1)
         n_layer = int(len(h))
         with open(input_file, "w") as f:
@@ -66,54 +66,63 @@ class MyForwardModel(object):
                 rho_val = rho_val*1000
                 f.write(f"{thickness} {vp_val} {vs_val} {rho_val}\n")
             f.write(f"# Last line is the half-space, its thickness is ignored but the first column is still mandatory\n")
-            #f.write(f"0   2000 1000 2500\n")
+            if thickness != 0:
+                f.write(f"0   6000 3000 2900\n")
 
 
         # Specify output file
         output_file = "output.txt"
     
-        # Run quick_routine
-        exit_code = quick_routine_gpell(input_file, output_file)
+        try:
+            # Run quick_routine
+            exit_code = quick_routine_gpell(input_file, output_file)
 
-        if exit_code != 0:
-            raise RuntimeError("quick_routine failed to execute.")
+            #if exit_code != 0:
+            #    raise RuntimeError("quick_routine failed to execute.")
 
-        # Read the results from output file
-        xmod, ymod = [], []
-        with open(output_file, "r") as f:
-            for line in f:
-                # skip comment lines
-                if (line[0]=="#"):
-                    continue
-                x, y = map(float, line.strip().split())  # Assuming two-column output
-                xmod.append(x)
-                ymod.append(y)
-                
-        xmod = np.array(xmod)
-        ymod = np.array(ymod)
+            # Read the results from output file
+            xmod, ymod = [], []
+            with open(output_file, "r") as f:
+                for line in f:
+                    # skip comment lines
+                    if (line[0]=="#"):
+                        continue
+                    x, y = map(float, line.strip().split())  # Assuming two-column output
+                    xmod.append(x)
+                    ymod.append(y)
+                    
+            xmod = np.array(xmod)
+            ymod = np.array(ymod)
 
-        #print('xmod:',xmod)
-        #print('ymod:',ymod)
+            #print('xmod:',xmod)
+            #print('ymod:',ymod)
 
-        # Interpolate ymod to match obsx
-        #interpolation_function = interp1d(xmod, ymod, kind='linear', bounds_error=False, fill_value=np.nan)
-        interpolation_function = interp1d(xmod, ymod, kind='linear', bounds_error=False, fill_value='extrapolate')
-        ymod_interpolated = interpolation_function(self.obsx)
-        #print('ymode interpolated:', ymod_interpolated)
+            # Interpolate ymod to match obsx
+            #interpolation_function = interp1d(xmod, ymod, kind='linear', bounds_error=False, fill_value=np.nan)
+            interpolation_function = interp1d(xmod, ymod, kind='linear', bounds_error=False, fill_value='extrapolate')
+            ymod_interpolated = interpolation_function(self.obsx)
+            #print('ymode interpolated:', ymod_interpolated)
 
-        return self.obsx, ymod_interpolated
+            return self.obsx, ymod_interpolated
+            #return xmod, ymod
 
-        #return xmod, ymod
+        except Exception as e:
+        # Log the error and return default values
+            print(f"Error during quick_routine execution: {e}")
+            # set all values of ymod to be -10
+            xmod = self.obsx
+            ymod = np.zeros(xmod.size)
+            return xmod, ymod
 
 
     def validate(self, xmod, ymod):
         """Some condition that modeled data is valid. """
 
-        print("Validating sizes:")
-        print('ymod type:', type(ymod))
-        print("ymod.size:", ymod.size)
-        print('obsx type', type(self.obsx))
-        print("self.obsx.size:", self.obsx.size)
+        #print("Validating sizes:")
+        #print('ymod type:', type(ymod))
+        #print("ymod.size:", ymod.size)
+        #print('obsx type', type(self.obsx))
+        #print("self.obsx.size:", self.obsx.size)
     
         if ymod.size == self.obsx.size:
             # xmod == xobs !!!
