@@ -111,7 +111,9 @@ class MyForwardModel(object):
             print(f"Error during quick_routine execution: {e}")
             # set all values of ymod to be -10
             xmod = self.obsx
-            ymod = np.zeros(xmod.size)
+            #ymod = np.zeros(xmod.size)
+            ymod = np.ones(xmod.size)
+            ymod = ymod*-1
             return xmod, ymod
 
 
