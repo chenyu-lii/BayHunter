@@ -10,6 +10,8 @@ import numpy as np
 # import quick_routine   # fictive routine
 from quick_routine import quick_routine_gpell
 from scipy.interpolate import interp1d
+import os
+import time
 
 class MyForwardModel(object):
     """
@@ -42,16 +44,21 @@ class MyForwardModel(object):
         ## original code to compute with quick routine
         # xmod, ymod = quick_routine(test, z, vp, vs, rho)
 
+        # use unique ID for each input and output of each run 
+        #unique_run_id = f"{os.getpid()}_{int(time.time())}"
+        unique_run_id = f"{os.getpid()}"
+        #print(f"Unique Run ID: {unique_run_id}")
+        input_file = "tmp_gpell/input_"+unique_run_id+".txt" 
         ### added lines to compute with quick_routine_gpell
-        input_file = "input.txt"
+        #input_file = "input.txt"
         # Write input data to file
         #with open(input_file, "w") as f:
         #    for depth, vp_val, vs_val, rho_val in zip(z, vp, vs, rho):
         #        f.write(f"{depth} {vp_val} {vs_val} {rho_val}\n")
         # Write input data to file, specify the last layer
-        print("h:",h)
+        #print("h:",h)
         #print("vp:",vp)
-        print("vs:",vs)
+        #print("vs:",vs)
         #n_layer = int(len(h)+1)
         n_layer = int(len(h))
         with open(input_file, "w") as f:
@@ -71,7 +78,8 @@ class MyForwardModel(object):
 
 
         # Specify output file
-        output_file = "output.txt"
+        #output_file = "output.txt"
+        output_file = "tmp_gpell/output_"+unique_run_id+".txt" 
     
         try:
             # Run quick_routine

@@ -17,7 +17,10 @@ import os.path as op
 import matplotlib
 matplotlib.use('PDF')
 
-from BayHunter import PlotFromStorage
+#from BayHunter import PlotFromStorage
+# import updated Targets.py under this folder
+from Plotting import PlotFromStorage
+
 from BayHunter import Targets
 from BayHunter import utils
 from BayHunter import MCMC_Optimizer
@@ -43,7 +46,8 @@ priors, initparams = utils.load_params(initfile)
 
 # Load observed data (synthetic test data)
 #xsw, _ysw = np.loadtxt('observed/st3_rdispph.dat').T
-xsw, _ysw = np.loadtxt('observed/st2_rdispph.dat').T   # my RF data
+#xsw, _ysw = np.loadtxt('observed/st2_rdispph.dat').T   # disp data group
+xsw, _ysw = np.loadtxt('observed/st4_rdispph.dat').T   # disp data high freq
 #xrf, _yrf = np.loadtxt('observed/st3_prf.dat').T
 #xrf, _yrf = np.loadtxt('observed/st1_prf.dat').T     # my RF data
 xrf, _yrf = np.loadtxt('observed/st2_prf.dat').T     # my RF data
@@ -53,7 +57,8 @@ xrf, _yrf = np.loadtxt('observed/st2_prf.dat').T     # my RF data
 # noise = [corr1, sigma1, corr2, sigma2] for 2 targets
 noise = [0.0, 0.012, 0.98, 0.005]
 ysw_err = SynthObs.compute_expnoise(_ysw, corr=noise[0], sigma=noise[1])
-ysw = _ysw + ysw_err
+#ysw = _ysw + ysw_err
+ysw = _ysw   # no noise 
 yrf_err = SynthObs.compute_gaussnoise(_yrf, corr=noise[2], sigma=noise[3])
 yrf = _yrf + yrf_err
 
@@ -65,7 +70,8 @@ yrf = _yrf + yrf_err
 # and BayWatch. You ONLY need to assign the values in truemodel that you
 # wish to have visible.
 #dep, vs = np.loadtxt('observed/st3_mod.dat', usecols=[0, 2], skiprows=1).T
-dep, vs = np.loadtxt('observed/st2_mod.dat', usecols=[0, 2], skiprows=1).T   # my data
+#dep, vs = np.loadtxt('observed/st2_mod.dat', usecols=[0, 2], skiprows=1).T   # my data
+dep, vs = np.loadtxt('observed/MP01_mod.dat', usecols=[0, 2], skiprows=1).T   # my data
 pdep = np.concatenate((np.repeat(dep, 2)[1:], [150]))
 pvs = np.repeat(vs, 2)
 
@@ -93,16 +99,16 @@ print(truenoise, explike)
 # and phase velocity. Default is the fundamendal mode, but this can be updated.
 # For RF chose P or S. You can also use user defined targets or replace the
 # forward modeling plugin wih your own module.
-#target1 = Targets.RayleighDispersionPhase(xsw, ysw, yerr=ysw_err)
-target1 = Targets.RayleighDispersionGroup(xsw, ysw, yerr=ysw_err)  # My data is group velocity
+target1 = Targets.RayleighDispersionPhase(xsw, ysw, yerr=ysw_err)
+#target1 = Targets.RayleighDispersionGroup(xsw, ysw, yerr=ysw_err)  # My data is group velocity
 target2 = Targets.PReceiverFunction(xrf, yrf)
 target2.moddata.plugin.set_modelparams(gauss=1., water=0.01, p=6.4)
 
 # Join the targets. targets must be a list instance with all targets
 # you want to use for MCMC Bayesian inversion.
-targets = Targets.JointTarget(targets=[target1, target2])
+#targets = Targets.JointTarget(targets=[target1, target2])
 #targets = Targets.JointTarget(targets=[target2])
-#targets = Targets.JointTarget(targets=[target1])
+targets = Targets.JointTarget(targets=[target1])
 
 #
 #  ---------------------------------------------------  Quick parameter update
@@ -113,7 +119,8 @@ targets = Targets.JointTarget(targets=[target1, target2])
 # have station specific values, etc.
 # See docs/bayhunter.pdf for explanation of parameters
 
-priors.update({'mohoest': (38, 4),  # optional, moho estimate (mean, std)
+#priors.update({'mohoest': (38, 4),  # optional, moho estimate (mean, std)
+priors.update({  # optional, moho estimate (mean, std)
                'rfnoise_corr': 0.98,
                'swdnoise_corr': 0.
                # 'rfnoise_sigma': np.std(yrf_err),  # fixed to true value
@@ -121,8 +128,11 @@ priors.update({'mohoest': (38, 4),  # optional, moho estimate (mean, std)
                })
 
 initparams.update({'nchains': 5,
-                   'iter_burnin': (2048 * 32),
-                   'iter_main': (2048 * 16),
+#initparams.update({'nchains': 3,
+                   #'iter_burnin': (2048 * 32),
+                   'iter_burnin': (2048 * 16),
+                   #'iter_main': (2048 * 16),
+                   'iter_main': (2048 * 8),
                    'propdist': (0.025, 0.025, 0.015, 0.005, 0.005),
                    })
 
