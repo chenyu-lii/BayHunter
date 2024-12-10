@@ -50,13 +50,19 @@ class MyForwardModel(object):
         print('vp:',vp_new)
         print('vs:',vs_new)
         print('h:',thickness)
-        print('rho:',rho_new)
-        
+        #print('rho:',rho_new)
+
+
+        L = len(vp)
         # call HVSRForwardModels
         freq1 = 0.1
         freq2 = 50
-        Ds = np.array( [0.05, 0.01, 0.01,0.01])
-        Dp = np.array( [0.05, 0.01, 0.01,0.01])
+        #Ds = np.array( [0.05, 0.01, 0.01,0.01])
+        #Dp = np.array( [0.05, 0.01, 0.01,0.01])
+        Ds = np.ones(vs_new.size)*0.01
+        Dp = np.ones(vp_new.size)*0.01
+        Ds[0] = 0.05
+        Dp[0] = 0.05
         hvsr_freq = self.obsx
         mod1 = HVSRForwardModels(ro=rho_new,Vs=vs_new,Vp=vp_new,fre1=freq1,fre2=freq2, f=hvsr_freq, Ds=Ds,Dp=Dp,h=thickness)
         xmod, ymod = mod1.HV()
