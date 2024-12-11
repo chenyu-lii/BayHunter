@@ -47,15 +47,16 @@ class MyForwardModel(object):
         vs_new = np.array(vs)*1000
         rho_new = np.array(rho)*1000
         
-        print('vp:',vp_new)
-        print('vs:',vs_new)
-        print('h:',thickness)
+        #print('vp:',vp_new)
+        #print('vs:',vs_new)
+        #print('h:',thickness)
         #print('rho:',rho_new)
 
 
         L = len(vp)
         # call HVSRForwardModels
-        freq1 = 0.1
+        #freq1 = 0.1
+        freq1 = 0.2
         freq2 = 50
         #Ds = np.array( [0.05, 0.01, 0.01,0.01])
         #Dp = np.array( [0.05, 0.01, 0.01,0.01])
